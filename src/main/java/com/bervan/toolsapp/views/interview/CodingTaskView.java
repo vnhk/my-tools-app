@@ -9,6 +9,7 @@ import jakarta.annotation.security.RolesAllowed;
 
 @Route(value = AbstractCodingTaskView.ROUTE_NAME, layout = MainLayout.class)
 @RolesAllowed("USER")
+@Deprecated
 public class CodingTaskView extends AbstractCodingTaskView {
     public CodingTaskView(CodingTaskService service, BervanViewConfig bervanViewConfig) {
         super(service, bervanViewConfig);

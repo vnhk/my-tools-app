@@ -11,6 +11,7 @@ import com.bervan.toolsapp.views.MainLayout;
 @Route(value = AbstractInterviewPlanView.ROUTE_NAME, layout = MainLayout.class)
 
 @RolesAllowed("USER")
+@Deprecated
 public class InterviewPlanView extends AbstractInterviewPlanView {
     public InterviewPlanView(@Autowired OneValueService service) {
         super(service);

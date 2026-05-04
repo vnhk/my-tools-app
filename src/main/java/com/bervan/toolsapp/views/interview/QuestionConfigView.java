@@ -10,6 +10,7 @@ import com.bervan.toolsapp.views.MainLayout;
 
 @Route(value = AbstractQuestionConfigView.ROUTE_NAME, layout = MainLayout.class)
 @RolesAllowed("USER")
+@Deprecated
 public class QuestionConfigView extends AbstractQuestionConfigView {
     public QuestionConfigView(@Autowired QuestionConfigService service, BervanViewConfig bervanViewConfig) {
         super(service, bervanViewConfig);

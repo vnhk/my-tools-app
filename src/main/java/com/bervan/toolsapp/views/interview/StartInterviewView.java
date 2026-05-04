@@ -9,6 +9,7 @@ import jakarta.annotation.security.RolesAllowed;
 @Route(value = AbstractStartInterviewView.ROUTE_NAME, layout = MainLayout.class)
 
 @RolesAllowed("USER")
+@Deprecated
 public class StartInterviewView extends AbstractStartInterviewView {
 
     public StartInterviewView() {
