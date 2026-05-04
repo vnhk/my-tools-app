@@ -16,7 +16,7 @@ import java.io.File;
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class ReactE2ETest extends BaseTest {
+public class ReactRunAllE2ETest extends BaseTest {
 
     @Autowired
     UserRepository userRepository;
