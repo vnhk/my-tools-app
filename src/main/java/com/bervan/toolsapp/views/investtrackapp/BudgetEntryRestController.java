@@ -2,7 +2,6 @@ package com.bervan.toolsapp.views.investtrackapp;
 
 import com.bervan.budget.entry.BudgetEntry;
 import com.bervan.budget.entry.BudgetEntryService;
-import com.bervan.common.service.AuthService;
 import com.bervan.common.config.EntityConfigValidator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -53,7 +52,6 @@ public class BudgetEntryRestController {
             @RequestParam(required = false) String dateFrom,
             @RequestParam(required = false) String dateTo
     ) {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         Set<BudgetEntry> all = budgetEntryService.load(PageRequest.of(0, Integer.MAX_VALUE));
         List<BudgetEntryDto> dtos = all.stream()
@@ -73,7 +71,6 @@ public class BudgetEntryRestController {
 
     @GetMapping("/categories")
     public ResponseEntity<List<String>> getCategories() {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         Set<BudgetEntry> all = budgetEntryService.load(PageRequest.of(0, Integer.MAX_VALUE));
         List<String> categories = all.stream()
                 .map(BudgetEntry::getCategory)
@@ -86,7 +83,6 @@ public class BudgetEntryRestController {
 
     @PostMapping
     public ResponseEntity<?> create(@RequestBody Map<String, Object> req) {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         List<EntityConfigValidator.FieldError> errors = validator.validate("BudgetEntry", req);
         if (!errors.isEmpty()) return ResponseEntity.badRequest().body(new ValidationErrorResponse(errors));
@@ -102,7 +98,6 @@ public class BudgetEntryRestController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable UUID id, @RequestBody Map<String, Object> req) {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         List<EntityConfigValidator.FieldError> errors = validator.validate("BudgetEntry", req);
         if (!errors.isEmpty()) return ResponseEntity.badRequest().body(new ValidationErrorResponse(errors));
@@ -120,7 +115,6 @@ public class BudgetEntryRestController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         Optional<BudgetEntry> match = budgetEntryService.load(PageRequest.of(0, Integer.MAX_VALUE)).stream()
                 .filter(e -> e.getId().equals(id)).findFirst();
         if (match.isEmpty()) return ResponseEntity.notFound().build();

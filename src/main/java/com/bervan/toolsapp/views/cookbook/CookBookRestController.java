@@ -1,7 +1,6 @@
 package com.bervan.toolsapp.views.cookbook;
 
 import com.bervan.common.search.SearchRequest;
-import com.bervan.common.service.AuthService;
 import com.bervan.cookbook.model.*;
 import com.bervan.cookbook.service.*;
 import org.springframework.data.domain.Page;
@@ -121,10 +120,6 @@ public class CookBookRestController {
         return new CartDto(c.getId(), c.getName(), c.getArchived(), items);
     }
 
-    private boolean isUnauthorized() {
-        return AuthService.getLoggedUserId() == null;
-    }
-
     // ─── Recipes ─────────────────────────────────────────────────────────────
 
     @GetMapping("/recipes")
@@ -135,7 +130,6 @@ public class CookBookRestController {
             @RequestParam(required = false) String tag,
             @RequestParam(required = false) Boolean favorite
     ) {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         Set<Recipe> all = recipeService.load(new SearchRequest(), Pageable.ofSize(100000));
         List<RecipeDto> dtos = all.stream()
@@ -154,13 +148,11 @@ public class CookBookRestController {
 
     @GetMapping("/recipes/tags")
     public ResponseEntity<List<String>> tags() {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         return ResponseEntity.ok(recipeService.loadAllTags());
     }
 
     @GetMapping("/recipes/{id}")
     public ResponseEntity<RecipeDto> getRecipe(@PathVariable UUID id) {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         return recipeService.loadById(id)
                 .map(r -> ResponseEntity.ok(toRecipeDto(r)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -168,7 +160,6 @@ public class CookBookRestController {
 
     @PostMapping("/recipes")
     public ResponseEntity<RecipeDto> createRecipe(@RequestBody Map<String, Object> req) {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         Recipe r = new Recipe();
         r.setId(UUID.randomUUID());
         r.setModificationDate(LocalDateTime.now());
@@ -179,7 +170,6 @@ public class CookBookRestController {
 
     @PutMapping("/recipes/{id}")
     public ResponseEntity<RecipeDto> updateRecipe(@PathVariable UUID id, @RequestBody Map<String, Object> req) {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         return recipeService.loadById(id).map(r -> {
             applyRecipeFields(r, req);
             r.setModificationDate(LocalDateTime.now());
@@ -189,7 +179,6 @@ public class CookBookRestController {
 
     @DeleteMapping("/recipes/{id}")
     public ResponseEntity<Void> deleteRecipe(@PathVariable UUID id) {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         return recipeService.loadById(id).map(r -> {
             recipeService.delete(r);
             return ResponseEntity.noContent().<Void>build();
@@ -198,7 +187,6 @@ public class CookBookRestController {
 
     @PostMapping("/recipes/{id}/toggle-favorite")
     public ResponseEntity<Void> toggleFavorite(@PathVariable UUID id) {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         recipeService.toggleFavorite(id);
         return ResponseEntity.ok().build();
     }
@@ -207,7 +195,6 @@ public class CookBookRestController {
     public ResponseEntity<Void> rateRecipe(@PathVariable UUID id,
                                             @RequestParam int rating,
                                             @RequestParam(required = false) String comment) {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         recipeService.addRating(id, rating, comment);
         return ResponseEntity.ok().build();
     }
@@ -215,7 +202,6 @@ public class CookBookRestController {
     @PostMapping("/recipes/{id}/ingredients")
     public ResponseEntity<RecipeIngredientDto> addIngredient(@PathVariable UUID id,
                                                               @RequestBody Map<String, Object> req) {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         return recipeService.loadById(id).map(recipe -> {
             String ingName = (String) req.get("ingredientName");
             UUID ingId = req.containsKey("ingredientId")
@@ -251,7 +237,6 @@ public class CookBookRestController {
 
     @DeleteMapping("/recipes/{id}/ingredients/{riId}")
     public ResponseEntity<Void> removeIngredient(@PathVariable UUID id, @PathVariable UUID riId) {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         return recipeService.loadById(id).map(recipe -> {
             recipe.getRecipeIngredients().removeIf(ri -> ri.getId().equals(riId));
             recipeService.save(recipe);
@@ -261,7 +246,6 @@ public class CookBookRestController {
 
     @PostMapping("/recipes/import-html")
     public ResponseEntity<RecipeDto> importHtml(@RequestBody Map<String, Object> req) {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         try {
             String scraperName = (String) req.get("scraperName");
             String html = (String) req.get("html");
@@ -274,7 +258,6 @@ public class CookBookRestController {
 
     @GetMapping("/recipes/scrapers")
     public ResponseEntity<List<String>> scrapers() {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         return ResponseEntity.ok(importService.getAvailableScraperNames());
     }
 
@@ -305,7 +288,6 @@ public class CookBookRestController {
             @RequestParam(defaultValue = "0") int offset,
             @RequestParam(defaultValue = "50") int limit
     ) {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         String q = search.isBlank() ? "a" : search;
         List<IngredientDto> results = ingredientService.searchByText(q, offset, limit)
                 .stream().map(this::toIngDto).collect(Collectors.toList());
@@ -314,7 +296,6 @@ public class CookBookRestController {
 
     @PostMapping("/ingredients")
     public ResponseEntity<IngredientDto> createIngredient(@RequestBody Map<String, Object> req) {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         Ingredient ing = new Ingredient();
         ing.setId(UUID.randomUUID());
         ing.setModificationDate(LocalDateTime.now());
@@ -326,7 +307,6 @@ public class CookBookRestController {
     @PutMapping("/ingredients/{id}")
     public ResponseEntity<IngredientDto> updateIngredient(@PathVariable UUID id,
                                                            @RequestBody Map<String, Object> req) {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         return ingredientService.loadById(id).map(ing -> {
             applyIngredientFields(ing, req);
             ing.setModificationDate(LocalDateTime.now());
@@ -336,7 +316,6 @@ public class CookBookRestController {
 
     @DeleteMapping("/ingredients/{id}")
     public ResponseEntity<Void> deleteIngredient(@PathVariable UUID id) {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         return ingredientService.loadById(id).map(ing -> {
             ingredientService.delete(ing);
             return ResponseEntity.noContent().<Void>build();
@@ -356,7 +335,6 @@ public class CookBookRestController {
 
     @GetMapping("/units")
     public ResponseEntity<List<Map<String, String>>> units() {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         List<Map<String, String>> result = Arrays.stream(CulinaryUnit.values())
                 .map(u -> Map.of("value", u.name(), "label", u.getDisplayName()))
                 .collect(Collectors.toList());
@@ -367,7 +345,6 @@ public class CookBookRestController {
 
     @GetMapping("/shopping-carts")
     public ResponseEntity<List<CartDto>> listCarts() {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         List<CartDto> carts = new ArrayList<>(shoppingCartService.load(new SearchRequest(), Pageable.ofSize(1000)))
                 .stream()
                 .filter(c -> !Boolean.TRUE.equals(c.isDeleted()))
@@ -378,7 +355,6 @@ public class CookBookRestController {
 
     @GetMapping("/shopping-carts/{id}")
     public ResponseEntity<CartDto> getCart(@PathVariable UUID id) {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         return shoppingCartService.loadById(id)
                 .map(c -> ResponseEntity.ok(toCartDto(c)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -386,7 +362,6 @@ public class CookBookRestController {
 
     @PostMapping("/shopping-carts")
     public ResponseEntity<CartDto> createCart(@RequestBody Map<String, Object> req) {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         ShoppingCart cart = new ShoppingCart();
         cart.setId(UUID.randomUUID());
         cart.setName((String) req.get("name"));
@@ -397,7 +372,6 @@ public class CookBookRestController {
 
     @DeleteMapping("/shopping-carts/{id}")
     public ResponseEntity<Void> deleteCart(@PathVariable UUID id) {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         return shoppingCartService.loadById(id).map(c -> {
             shoppingCartService.delete(c);
             return ResponseEntity.noContent().<Void>build();
@@ -406,7 +380,6 @@ public class CookBookRestController {
 
     @PostMapping("/shopping-carts/{id}/archive")
     public ResponseEntity<Void> archiveCart(@PathVariable UUID id) {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         return shoppingCartService.loadById(id).map(c -> {
             c.setArchived(true);
             shoppingCartService.save(c);
@@ -418,7 +391,6 @@ public class CookBookRestController {
     public ResponseEntity<Void> addRecipeToCart(@PathVariable UUID id,
                                                  @RequestParam UUID recipeId,
                                                  @RequestParam(defaultValue = "1.0") double multiplier) {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         return recipeService.loadById(recipeId).map(recipe -> {
             shoppingCartService.addFromRecipe(id, recipe, multiplier);
             return ResponseEntity.ok().<Void>build();
@@ -427,7 +399,6 @@ public class CookBookRestController {
 
     @PostMapping("/shopping-carts/{id}/items/{itemId}/toggle")
     public ResponseEntity<Void> toggleItem(@PathVariable UUID id, @PathVariable UUID itemId) {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         return shoppingCartService.loadById(id).map(cart -> {
             shoppingCartService.togglePurchased(cart, itemId);
             return ResponseEntity.ok().<Void>build();
@@ -436,7 +407,6 @@ public class CookBookRestController {
 
     @GetMapping("/shopping-carts/{id}/export")
     public ResponseEntity<String> exportCart(@PathVariable UUID id) {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         return ResponseEntity.ok(shoppingCartService.exportToText(id));
     }
 
@@ -444,7 +414,6 @@ public class CookBookRestController {
 
     @PostMapping("/search")
     public ResponseEntity<List<RecipeMatchDto>> search(@RequestBody Map<String, Object> req) {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         @SuppressWarnings("unchecked")
         List<String> ingredients = (List<String>) req.getOrDefault("ingredients", Collections.emptyList());
         int minCoverage = req.containsKey("minCoverage")

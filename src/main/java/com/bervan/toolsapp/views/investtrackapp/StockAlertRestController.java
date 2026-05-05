@@ -69,7 +69,6 @@ public class StockAlertRestController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         Set<StockPriceAlert> all = alertService.load(PageRequest.of(0, Integer.MAX_VALUE));
         List<StockAlertDto> dtos = all.stream()
@@ -84,7 +83,6 @@ public class StockAlertRestController {
 
     @PostMapping
     public ResponseEntity<?> create(@RequestBody StockAlertRequest req) {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         Map<String, Object> fields = new LinkedHashMap<>();
         if (req.name() != null) fields.put("name", req.name());
@@ -121,7 +119,6 @@ public class StockAlertRestController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable UUID id, @RequestBody StockAlertRequest req) {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         Optional<StockPriceAlert> match = alertService.load(PageRequest.of(0, Integer.MAX_VALUE)).stream()
                 .filter(a -> a.getId().equals(id)).findFirst();
@@ -154,7 +151,6 @@ public class StockAlertRestController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         Optional<StockPriceAlert> match = alertService.load(PageRequest.of(0, Integer.MAX_VALUE)).stream()
                 .filter(a -> a.getId().equals(id)).findFirst();
         if (match.isEmpty()) return ResponseEntity.notFound().build();

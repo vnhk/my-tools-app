@@ -1,6 +1,5 @@
 package com.bervan.toolsapp.views.investtrackapp;
 
-import com.bervan.common.service.AuthService;
 import com.bervan.investments.recommendation.InvestmentRecommendation;
 import com.bervan.investments.recommendation.InvestmentRecommendationService;
 import com.bervan.common.config.EntityConfigValidator;
@@ -55,7 +54,6 @@ public class InvestmentRecommendationRestController {
             @RequestParam(required = false) String recommendationResult,
             @RequestParam(required = false) String date
     ) {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         Set<InvestmentRecommendation> all = recommendationService.load(PageRequest.of(0, Integer.MAX_VALUE));
         List<RecommendationDto> dtos = all.stream()
@@ -78,7 +76,6 @@ public class InvestmentRecommendationRestController {
 
     @PostMapping
     public ResponseEntity<?> create(@RequestBody Map<String, Object> req) {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         List<EntityConfigValidator.FieldError> errors = validator.validate("InvestmentRecommendation", req);
         if (!errors.isEmpty()) return ResponseEntity.badRequest().body(new ValidationErrorResponse(errors));
@@ -94,7 +91,6 @@ public class InvestmentRecommendationRestController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable UUID id, @RequestBody Map<String, Object> req) {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         List<EntityConfigValidator.FieldError> errors = validator.validate("InvestmentRecommendation", req);
         if (!errors.isEmpty()) return ResponseEntity.badRequest().body(new ValidationErrorResponse(errors));
@@ -112,7 +108,6 @@ public class InvestmentRecommendationRestController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         Optional<InvestmentRecommendation> match = recommendationService.load(PageRequest.of(0, Integer.MAX_VALUE)).stream()
                 .filter(r -> r.getId().equals(id)).findFirst();
         if (match.isEmpty()) return ResponseEntity.notFound().build();

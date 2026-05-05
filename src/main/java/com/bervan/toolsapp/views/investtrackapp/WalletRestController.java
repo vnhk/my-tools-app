@@ -71,7 +71,6 @@ public class WalletRestController {
             @RequestParam(defaultValue = "name") String sort,
             @RequestParam(defaultValue = "asc") String direction
     ) {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         Set<Wallet> wallets = walletService.load(PageRequest.of(0, Integer.MAX_VALUE));
         List<WalletDto> dtos = wallets.stream()
@@ -86,7 +85,6 @@ public class WalletRestController {
 
     @GetMapping("/{id}")
     public ResponseEntity<WalletDto> getById(@PathVariable UUID id) {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         return walletService.load(PageRequest.of(0, Integer.MAX_VALUE)).stream()
                 .filter(w -> w.getId().equals(id))
                 .findFirst()
@@ -96,7 +94,6 @@ public class WalletRestController {
 
     @GetMapping("/{id}/snapshots")
     public ResponseEntity<List<WalletSnapshotDto>> getSnapshots(@PathVariable UUID id) {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         List<WalletSnapshot> snapshots = snapshotService.findByWalletId(id);
         List<WalletSnapshotDto> dtos = snapshots.stream()
                 .map(s -> new WalletSnapshotDto(s.getId(), id, s.getSnapshotDate(),
@@ -108,7 +105,6 @@ public class WalletRestController {
 
     @GetMapping("/{id}/metrics")
     public ResponseEntity<Map<String, Object>> getMetrics(@PathVariable UUID id) {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         Optional<Wallet> walletOpt = walletService.load(PageRequest.of(0, Integer.MAX_VALUE)).stream()
                 .filter(w -> w.getId().equals(id)).findFirst();
         if (walletOpt.isEmpty()) return ResponseEntity.notFound().build();
@@ -143,7 +139,6 @@ public class WalletRestController {
 
     @PostMapping
     public ResponseEntity<?> create(@RequestBody WalletCreateRequest req) {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         Map<String, Object> fields = new LinkedHashMap<>();
         if (req.name() != null) fields.put("name", req.name());
@@ -172,7 +167,6 @@ public class WalletRestController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable UUID id, @RequestBody Map<String, Object> req) {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         List<EntityConfigValidator.FieldError> errors = validator.validate("Wallet", req);
         if (!errors.isEmpty()) return ResponseEntity.badRequest().body(new ValidationErrorResponse(errors));
@@ -195,7 +189,6 @@ public class WalletRestController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         Optional<Wallet> match = walletService.load(PageRequest.of(0, Integer.MAX_VALUE)).stream()
                 .filter(w -> w.getId().equals(id)).findFirst();
         if (match.isEmpty()) return ResponseEntity.notFound().build();
@@ -212,7 +205,6 @@ public class WalletRestController {
 
     @PostMapping("/{walletId}/snapshots")
     public ResponseEntity<?> createSnapshot(@PathVariable UUID walletId, @RequestBody SnapshotCreateRequest req) {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         Optional<Wallet> walletOpt = walletService.load(PageRequest.of(0, Integer.MAX_VALUE)).stream()
                 .filter(w -> w.getId().equals(walletId)).findFirst();
@@ -239,7 +231,6 @@ public class WalletRestController {
     @PutMapping("/{walletId}/snapshots/{snapshotId}")
     public ResponseEntity<?> updateSnapshot(@PathVariable UUID walletId, @PathVariable UUID snapshotId,
                                              @RequestBody Map<String, Object> req) {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         List<WalletSnapshot> snapshots = snapshotService.findByWalletId(walletId);
         Optional<WalletSnapshot> match = snapshots.stream().filter(s -> s.getId().equals(snapshotId)).findFirst();
@@ -260,7 +251,6 @@ public class WalletRestController {
 
     @DeleteMapping("/{walletId}/snapshots/{snapshotId}")
     public ResponseEntity<Void> deleteSnapshot(@PathVariable UUID walletId, @PathVariable UUID snapshotId) {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         List<WalletSnapshot> snapshots = snapshotService.findByWalletId(walletId);
         if (snapshots.stream().noneMatch(s -> s.getId().equals(snapshotId))) return ResponseEntity.notFound().build();
         walletService.deleteSnapshot(snapshotId);

@@ -60,9 +60,9 @@ public class SecurityConfig extends VaadinWebSecurity {
                             "/language-learning/**", "/products/**", "/api/tv/pair/**", "/ws/remote-control")
                             .permitAll();
                     authorizationManagerRequestMatcherRegistry.requestMatchers("/line-awesome/**", "/static/**", "/images/**", "/player.html").permitAll();
-                    authorizationManagerRequestMatcherRegistry.requestMatchers("/api/streaming/react-player/**").permitAll();
                     authorizationManagerRequestMatcherRegistry.requestMatchers("/api/auth/**").permitAll();
                     authorizationManagerRequestMatcherRegistry.requestMatchers("/api/config").permitAll();
+                    authorizationManagerRequestMatcherRegistry.requestMatchers("/api/**", "/storage/**", "/file-storage-app/**").authenticated();
                 })
                 .formLogin(httpSecurityFormLoginConfigurer -> {
                     httpSecurityFormLoginConfigurer.loginPage("/login").permitAll();

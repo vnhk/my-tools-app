@@ -1,12 +1,10 @@
 package com.bervan.toolsapp.views.investtrackapp;
 
-import com.bervan.common.service.AuthService;
 import com.bervan.investtrack.model.Wallet;
 import com.bervan.investtrack.model.WalletSnapshot;
 import com.bervan.investtrack.service.*;
 import com.bervan.investtrack.service.CurrencyConverter.Currency;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,7 +37,6 @@ public class InvestDashboardRestController {
 
     @GetMapping
     public ResponseEntity<Map<String, Object>> getDashboard() {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         // Load all wallets with snapshots
         List<Wallet> allWallets = new ArrayList<>(walletService.load(PageRequest.of(0, Integer.MAX_VALUE)));

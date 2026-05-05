@@ -1,11 +1,9 @@
 package com.bervan.toolsapp.views.cookbook;
 
-import com.bervan.common.service.AuthService;
 import com.bervan.cookbook.model.*;
 import com.bervan.cookbook.service.DietDashboardService;
 import com.bervan.cookbook.service.DietService;
 import com.bervan.cookbook.service.IngredientService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -66,10 +64,6 @@ public class DietRestController {
 
     // ─── Helpers ─────────────────────────────────────────────────────────────
 
-    private boolean isUnauthorized() {
-        return AuthService.getLoggedUserId() == null;
-    }
-
     private DietMealItemDto toItemDto(DietMealItem i) {
         boolean quickEntry = i.getIngredient() == null;
         return new DietMealItemDto(
@@ -125,7 +119,6 @@ public class DietRestController {
 
     @GetMapping("/day")
     public ResponseEntity<DietDayDto> getDay(@RequestParam String date) {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         LocalDate d = LocalDate.parse(date);
         return ResponseEntity.ok(toDayDto(dietService.getOrCreateDay(d)));
     }
@@ -133,7 +126,6 @@ public class DietRestController {
     @PutMapping("/day")
     public ResponseEntity<DietDayDto> updateDay(@RequestParam String date,
                                                  @RequestBody Map<String, Object> req) {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         LocalDate d = LocalDate.parse(date);
         DietDay day = dietService.getOrCreateDay(d);
         dietService.updateDayTargets(day,
@@ -161,7 +153,6 @@ public class DietRestController {
     public ResponseEntity<DietDayDto> addItem(@PathVariable String date,
                                                @PathVariable String mealType,
                                                @RequestBody Map<String, Object> req) {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         LocalDate d = LocalDate.parse(date);
         DietMeal.MealType type;
         try { type = DietMeal.MealType.valueOf(mealType.toUpperCase()); }
@@ -205,7 +196,6 @@ public class DietRestController {
     @DeleteMapping("/day/{date}/items/{itemId}")
     public ResponseEntity<DietDayDto> removeItem(@PathVariable String date,
                                                   @PathVariable UUID itemId) {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         LocalDate d = LocalDate.parse(date);
         DietDay day = dietService.getOrCreateDay(d);
         day.getMeals().stream()
@@ -222,7 +212,6 @@ public class DietRestController {
                                                 @PathVariable String mealType,
                                                 @RequestParam String sourceDate,
                                                 @RequestParam String sourceType) {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         LocalDate d = LocalDate.parse(date);
         DietMeal.MealType targetMealType, sourceMealType;
         try {
@@ -243,7 +232,6 @@ public class DietRestController {
             @RequestParam(defaultValue = "") String to,
             @RequestParam(defaultValue = "DAY") String groupBy
     ) {
-        if (isUnauthorized()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         LocalDate fromDate = from.isBlank() ? LocalDate.now().minusDays(30) : LocalDate.parse(from);
         LocalDate toDate = to.isBlank() ? LocalDate.now() : LocalDate.parse(to);
         DietDashboardService.GroupBy gb;

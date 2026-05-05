@@ -1,6 +1,5 @@
 package com.bervan.toolsapp.views.investtrackapp;
 
-import com.bervan.common.service.AuthService;
 import com.bervan.investtrack.model.Wallet;
 import com.bervan.investtrack.model.WalletSnapshot;
 import com.bervan.investtrack.service.WalletService;
@@ -63,7 +62,6 @@ public class DataIERestController {
 
     @GetMapping("/export")
     public ResponseEntity<byte[]> export(@RequestParam(defaultValue = "json") String format) {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         try {
             Set<WalletSnapshot> all = snapshotService.load(Pageable.ofSize(1000000));
@@ -83,7 +81,6 @@ public class DataIERestController {
 
     @PostMapping("/import")
     public ResponseEntity<ImportResultDto> importData(@RequestParam("file") MultipartFile file) {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         int imported = 0;
         int skipped = 0;

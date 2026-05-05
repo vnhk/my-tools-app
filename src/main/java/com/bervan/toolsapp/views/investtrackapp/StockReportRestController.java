@@ -2,12 +2,10 @@ package com.bervan.toolsapp.views.investtrackapp;
 
 import com.bervan.asynctask.AsyncTask;
 import com.bervan.asynctask.AsyncTaskService;
-import com.bervan.common.service.AuthService;
 import com.bervan.investtrack.model.StockPriceData;
 import com.bervan.investtrack.service.ReportData;
 import com.bervan.investtrack.service.StockPriceReportService;
 import com.bervan.logging.BaseProcessContext;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -62,7 +60,6 @@ public class StockReportRestController {
 
     @GetMapping("/strategies")
     public ResponseEntity<List<String>> strategies() {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         return ResponseEntity.ok(reportService.getStrategyNames());
     }
 
@@ -71,7 +68,6 @@ public class StockReportRestController {
             @RequestParam(required = false) String date,
             @RequestParam(required = false) String strategy
     ) {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         LocalDate reportDate = date != null ? LocalDate.parse(date) : LocalDate.now();
         List<String> strategies = reportService.getStrategyNames();
@@ -98,7 +94,6 @@ public class StockReportRestController {
 
     @PostMapping("/trigger/morning")
     public ResponseEntity<Map<String, String>> triggerMorning() {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         SecurityContext context = SecurityContextHolder.getContext();
         AsyncTask task = asyncTaskService.createAndStoreAsyncTask();
         new Thread(() -> {
@@ -116,7 +111,6 @@ public class StockReportRestController {
 
     @PostMapping("/trigger/evening")
     public ResponseEntity<Map<String, String>> triggerEvening() {
-        if (AuthService.getLoggedUserId() == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         SecurityContext context = SecurityContextHolder.getContext();
         AsyncTask task = asyncTaskService.createAndStoreAsyncTask();
         new Thread(() -> {
