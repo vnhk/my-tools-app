@@ -1,12 +1,12 @@
 package com.bervan.toolsapp.views.investtrackapp;
 
+import com.bervan.common.config.EntityConfigValidator;
 import com.bervan.common.service.AuthService;
 import com.bervan.investtrack.model.Wallet;
 import com.bervan.investtrack.model.WalletSnapshot;
 import com.bervan.investtrack.service.InvestmentCalculationService;
 import com.bervan.investtrack.service.WalletService;
 import com.bervan.investtrack.service.WalletSnapshotService;
-import com.bervan.common.config.EntityConfigValidator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -31,30 +31,12 @@ public class WalletRestController {
     private final EntityConfigValidator validator;
 
     public WalletRestController(WalletService walletService, WalletSnapshotService snapshotService,
-                                 InvestmentCalculationService calculationService, EntityConfigValidator validator) {
+                                InvestmentCalculationService calculationService, EntityConfigValidator validator) {
         this.walletService = walletService;
         this.snapshotService = snapshotService;
         this.calculationService = calculationService;
         this.validator = validator;
     }
-
-    record WalletDto(
-            UUID id, String name, String description, String currency, String riskLevel,
-            String walletType, Boolean compareWithSP500, LocalDateTime createdDate, LocalDateTime modificationDate,
-            BigDecimal currentValue, BigDecimal totalDeposits, BigDecimal totalWithdrawals, BigDecimal totalEarnings, BigDecimal returnRate
-    ) {}
-
-    record WalletSnapshotDto(
-            UUID id, UUID walletId, LocalDate snapshotDate, BigDecimal portfolioValue,
-            BigDecimal monthlyDeposit, BigDecimal monthlyWithdrawal, BigDecimal monthlyEarnings, String notes
-    ) {}
-
-    record WalletCreateRequest(
-            String name, String description, String currency, String riskLevel,
-            String walletType, Boolean compareWithSP500
-    ) {}
-
-    record ValidationErrorResponse(List<EntityConfigValidator.FieldError> errors) {}
 
     private WalletDto toDto(Wallet w) {
         return new WalletDto(
@@ -192,16 +174,9 @@ public class WalletRestController {
         Optional<Wallet> match = walletService.load(PageRequest.of(0, Integer.MAX_VALUE)).stream()
                 .filter(w -> w.getId().equals(id)).findFirst();
         if (match.isEmpty()) return ResponseEntity.notFound().build();
-        walletService.deleteWallet(id);
+        walletService.delete(match.get());
         return ResponseEntity.noContent().build();
     }
-
-    // ── Snapshot endpoints ──────────────────────────────────────────────────────
-
-    record SnapshotCreateRequest(
-            LocalDate snapshotDate, BigDecimal portfolioValue, BigDecimal monthlyDeposit,
-            BigDecimal monthlyWithdrawal, BigDecimal monthlyEarnings, String notes
-    ) {}
 
     @PostMapping("/{walletId}/snapshots")
     public ResponseEntity<?> createSnapshot(@PathVariable UUID walletId, @RequestBody SnapshotCreateRequest req) {
@@ -230,18 +205,23 @@ public class WalletRestController {
 
     @PutMapping("/{walletId}/snapshots/{snapshotId}")
     public ResponseEntity<?> updateSnapshot(@PathVariable UUID walletId, @PathVariable UUID snapshotId,
-                                             @RequestBody Map<String, Object> req) {
+                                            @RequestBody Map<String, Object> req) {
 
         List<WalletSnapshot> snapshots = snapshotService.findByWalletId(walletId);
         Optional<WalletSnapshot> match = snapshots.stream().filter(s -> s.getId().equals(snapshotId)).findFirst();
         if (match.isEmpty()) return ResponseEntity.notFound().build();
 
         WalletSnapshot snapshot = match.get();
-        if (req.containsKey("snapshotDate")) snapshot.setSnapshotDate(LocalDate.parse((String) req.get("snapshotDate")));
-        if (req.containsKey("portfolioValue")) snapshot.setPortfolioValue(new BigDecimal(req.get("portfolioValue").toString()));
-        if (req.containsKey("monthlyDeposit")) snapshot.setMonthlyDeposit(new BigDecimal(req.get("monthlyDeposit").toString()));
-        if (req.containsKey("monthlyWithdrawal")) snapshot.setMonthlyWithdrawal(new BigDecimal(req.get("monthlyWithdrawal").toString()));
-        if (req.containsKey("monthlyEarnings")) snapshot.setMonthlyEarnings(new BigDecimal(req.get("monthlyEarnings").toString()));
+        if (req.containsKey("snapshotDate"))
+            snapshot.setSnapshotDate(LocalDate.parse((String) req.get("snapshotDate")));
+        if (req.containsKey("portfolioValue"))
+            snapshot.setPortfolioValue(new BigDecimal(req.get("portfolioValue").toString()));
+        if (req.containsKey("monthlyDeposit"))
+            snapshot.setMonthlyDeposit(new BigDecimal(req.get("monthlyDeposit").toString()));
+        if (req.containsKey("monthlyWithdrawal"))
+            snapshot.setMonthlyWithdrawal(new BigDecimal(req.get("monthlyWithdrawal").toString()));
+        if (req.containsKey("monthlyEarnings"))
+            snapshot.setMonthlyEarnings(new BigDecimal(req.get("monthlyEarnings").toString()));
         if (req.containsKey("notes")) snapshot.setNotes((String) req.get("notes"));
         WalletSnapshot saved = snapshotService.save(snapshot);
         return ResponseEntity.ok(new WalletSnapshotDto(saved.getId(), walletId, saved.getSnapshotDate(),
@@ -255,5 +235,36 @@ public class WalletRestController {
         if (snapshots.stream().noneMatch(s -> s.getId().equals(snapshotId))) return ResponseEntity.notFound().build();
         walletService.deleteSnapshot(snapshotId);
         return ResponseEntity.noContent().build();
+    }
+
+    record WalletDto(
+            UUID id, String name, String description, String currency, String riskLevel,
+            String walletType, Boolean compareWithSP500, LocalDateTime createdDate, LocalDateTime modificationDate,
+            BigDecimal currentValue, BigDecimal totalDeposits, BigDecimal totalWithdrawals, BigDecimal totalEarnings,
+            BigDecimal returnRate
+    ) {
+    }
+
+    // ── Snapshot endpoints ──────────────────────────────────────────────────────
+
+    record WalletSnapshotDto(
+            UUID id, UUID walletId, LocalDate snapshotDate, BigDecimal portfolioValue,
+            BigDecimal monthlyDeposit, BigDecimal monthlyWithdrawal, BigDecimal monthlyEarnings, String notes
+    ) {
+    }
+
+    record WalletCreateRequest(
+            String name, String description, String currency, String riskLevel,
+            String walletType, Boolean compareWithSP500
+    ) {
+    }
+
+    record ValidationErrorResponse(List<EntityConfigValidator.FieldError> errors) {
+    }
+
+    record SnapshotCreateRequest(
+            LocalDate snapshotDate, BigDecimal portfolioValue, BigDecimal monthlyDeposit,
+            BigDecimal monthlyWithdrawal, BigDecimal monthlyEarnings, String notes
+    ) {
     }
 }
