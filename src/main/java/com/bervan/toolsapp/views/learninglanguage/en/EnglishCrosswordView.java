@@ -8,6 +8,7 @@ import jakarta.annotation.security.RolesAllowed;
 
 @Route(value = AbstractEnglishCrosswordView.ROUTE_NAME, layout = MainLayout.class)
 @RolesAllowed("USER")
+@Deprecated
 public class EnglishCrosswordView extends AbstractEnglishCrosswordView {
 
     public EnglishCrosswordView(TranslationRecordService translationRecordService) {

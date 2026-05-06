@@ -8,6 +8,7 @@ import jakarta.annotation.security.RolesAllowed;
 
 @Route(value = AbstractEnglishLearningView.ROUTE_NAME, layout = MainLayout.class)
 @RolesAllowed("USER")
+@Deprecated
 public class EnglishLearningAppLearningView extends AbstractEnglishLearningView {
 
     public EnglishLearningAppLearningView(TranslationRecordService translatorRecordService) {

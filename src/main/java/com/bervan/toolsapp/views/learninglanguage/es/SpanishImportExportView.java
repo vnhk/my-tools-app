@@ -9,6 +9,7 @@ import jakarta.annotation.security.RolesAllowed;
 
 @Route(value = AbstractSpanishImportExportView.ROUTE_NAME, layout = MainLayout.class)
 @RolesAllowed("USER")
+@Deprecated
 public class SpanishImportExportView extends AbstractSpanishImportExportView {
 
     public SpanishImportExportView( TranslationRecordService translationRecordService, BervanViewConfig bervanViewConfig) {

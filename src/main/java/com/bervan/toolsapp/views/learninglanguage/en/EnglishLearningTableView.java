@@ -14,6 +14,7 @@ import jakarta.annotation.security.RolesAllowed;
 
 @Route(value = AbstractEnglishLearningTableView.ROUTE_NAME, layout = MainLayout.class)
 @RolesAllowed("USER")
+@Deprecated
 public class EnglishLearningTableView extends AbstractEnglishLearningTableView {
 
     public EnglishLearningTableView(TranslationRecordService translatorRecordService,

@@ -13,6 +13,7 @@ import jakarta.annotation.security.RolesAllowed;
 
 //@Route(value = AbstractSpanishFastImportView.ROUTE_NAME, layout = MainLayout.class)
 //@RolesAllowed("USER")
+@Deprecated
 public class SpanishFastImportView extends AbstractSpanishFastImportView {
 
     public SpanishFastImportView(TranslationRecordService translationRecordService, TextToSpeechService textToSpeechService, SearchService searchService, ExampleOfUsageService exampleOfUsageService, TranslatorService translatorService, AsyncTaskService asyncTaskService) {
