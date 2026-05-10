@@ -7,6 +7,7 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
 
+@Deprecated
 @Route(value = AbstractSpreadsheetView.ROUTE_NAME, layout = MainLayout.class)
 @RolesAllowed("USER")
 public class SpreadsheetView extends AbstractSpreadsheetView implements HasUrlParameter<String> {

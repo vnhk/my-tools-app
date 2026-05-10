@@ -11,8 +11,8 @@ import jakarta.annotation.security.RolesAllowed;
 import java.util.UUID;
 
 
+@Deprecated
 @Route(value = AbstractSpreadsheetsView.ROUTE_NAME, layout = MainLayout.class)
-
 @RolesAllowed("USER")
 public class SpreadsheetsView extends AbstractSpreadsheetsView {
     public SpreadsheetsView(BaseService<UUID, Spreadsheet> service, BervanViewConfig bervanViewConfig) {
