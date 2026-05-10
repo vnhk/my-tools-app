@@ -10,6 +10,7 @@ import com.bervan.toolsapp.views.MainLayout;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
 
+@Deprecated
 @Route(value = AbstractNotLearnedWordsView.ROUTE_NAME, layout = MainLayout.class)
 @RolesAllowed("USER")
 public class NotLearnedWordsView extends AbstractNotLearnedWordsView {

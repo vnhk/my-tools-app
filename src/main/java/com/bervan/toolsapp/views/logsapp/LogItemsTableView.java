@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+@Deprecated
 @Route(value = LogItemsTableView.ROUTE_NAME, layout = MainLayout.class)
 @RolesAllowed("USER")
 public class LogItemsTableView extends AbstractBervanTableView<Long, LogEntity> {

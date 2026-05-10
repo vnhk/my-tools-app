@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+@Deprecated
 @Route(value = TrackersTableView.ROUTE_NAME, layout = MainLayout.class)
 @RolesAllowed("USER")
 public class TrackersTableView extends AbstractBervanTableView<Long, LogEntity> {
