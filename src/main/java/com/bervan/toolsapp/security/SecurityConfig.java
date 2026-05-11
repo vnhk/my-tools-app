@@ -1,7 +1,6 @@
 package com.bervan.toolsapp.security;
 
 import com.bervan.streamingapp.tv.TvTokenAuthenticationFilter;
-import com.bervan.toolsapp.views.LoginView;
 import com.vaadin.flow.spring.security.VaadinWebSecurity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -76,7 +75,6 @@ public class SecurityConfig extends VaadinWebSecurity {
                 });
 
 
-        setLoginView(http, LoginView.class);
         super.configure(http);
 
         // JWT filter for React app, TV token filter for TV app.
