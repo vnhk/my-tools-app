@@ -11,6 +11,7 @@ import jakarta.annotation.security.RolesAllowed;
 import java.util.UUID;
 
 
+@Deprecated
 @Route(value = AbstractAsyncTaskList.ROUTE_NAME, layout = MainLayout.class)
 @RolesAllowed({"USER"})
 public class AsyncTaskListView extends AbstractAsyncTaskList {
