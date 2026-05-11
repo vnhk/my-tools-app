@@ -33,7 +33,7 @@ public class ReactInvestmentsE2ETest extends BaseTest {
     @Test
     @Order(1)
     public void runPlaywrightIntegrationTests() throws Exception {
-        // my-tools-vaadin-app → my-tools → IdeaProjects → my-tools-react
+        // my-tools-app → my-tools → IdeaProjects → my-tools-react
         // move to property
         File reactDir = new File("../../my-tools-react").getCanonicalFile();
         String command = "npx playwright test --config playwright.integration.config.ts e2e/integration/invest-track/*.spec.ts --headed";

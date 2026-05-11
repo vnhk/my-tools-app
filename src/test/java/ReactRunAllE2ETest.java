@@ -33,7 +33,7 @@ public class ReactRunAllE2ETest extends BaseTest {
     @Test
     @Order(1)
     public void runPlaywrightIntegrationTests() throws Exception {
-        // my-tools-vaadin-app → my-tools → IdeaProjects → my-tools-react
+        // my-tools-app → my-tools → IdeaProjects → my-tools-react
         // move to property
         File reactDir = new File("../../my-tools-react").getCanonicalFile();
 

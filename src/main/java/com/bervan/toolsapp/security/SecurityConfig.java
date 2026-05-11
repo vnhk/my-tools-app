@@ -1,7 +1,6 @@
 package com.bervan.toolsapp.security;
 
 import com.bervan.streamingapp.tv.TvTokenAuthenticationFilter;
-import com.vaadin.flow.spring.security.VaadinWebSecurity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,6 +9,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -17,7 +17,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends VaadinWebSecurity {
+public class SecurityConfig {
 
     private final AuthenticationProvider otpAuthenticationProvider;
     private final TvTokenAuthenticationFilter tvTokenAuthenticationFilter;
@@ -33,7 +33,6 @@ public class SecurityConfig extends VaadinWebSecurity {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
-
     @Bean
     public AuthenticationManager authenticationManager(
             HttpSecurity http,
@@ -44,40 +43,32 @@ public class SecurityConfig extends VaadinWebSecurity {
         return authBuilder.build();
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        HttpSecurity httpSecurity;
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         if (Boolean.parseBoolean(System.getProperty("server.ssl.enabled", "false"))) {
-            httpSecurity = http.requiresChannel(channel ->
-                    channel.anyRequest().requiresSecure());
-        } else {
-            httpSecurity = http;
+            http.requiresChannel(channel -> channel.anyRequest().requiresSecure());
         }
 
-        httpSecurity.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
-                    authorizationManagerRequestMatcherRegistry.requestMatchers("/login", "/pocket/**",
+        http.authorizeHttpRequests(auth -> {
+                    auth.requestMatchers("/login", "/pocket/**",
                             "/language-learning/**", "/products/**", "/api/tv/pair/**", "/ws/remote-control")
                             .permitAll();
-                    authorizationManagerRequestMatcherRegistry.requestMatchers("/line-awesome/**", "/static/**", "/images/**", "/player.html").permitAll();
-                    authorizationManagerRequestMatcherRegistry.requestMatchers("/api/auth/**").permitAll();
-                    authorizationManagerRequestMatcherRegistry.requestMatchers("/api/config").permitAll();
-                    authorizationManagerRequestMatcherRegistry.requestMatchers("/api/**", "/storage/**", "/file-storage-app/**").authenticated();
+                    auth.requestMatchers("/line-awesome/**", "/static/**", "/images/**", "/player.html").permitAll();
+                    auth.requestMatchers("/api/auth/**").permitAll();
+                    auth.requestMatchers("/api/config").permitAll();
+                    auth.requestMatchers("/api/**", "/storage/**", "/file-storage-app/**").authenticated();
                 })
-                .formLogin(httpSecurityFormLoginConfigurer -> {
-                    httpSecurityFormLoginConfigurer.loginPage("/login").permitAll();
-                    httpSecurityFormLoginConfigurer.defaultSuccessUrl("/generate-otp");
-                    httpSecurityFormLoginConfigurer.successForwardUrl("/generate-otp");
+                .formLogin(form -> {
+                    form.loginPage("/login").permitAll();
+                    form.defaultSuccessUrl("/generate-otp");
+                    form.successForwardUrl("/generate-otp");
                 })
                 .authenticationProvider(otpAuthenticationProvider)
-                .logout(httpSecurityLogoutConfigurer -> {
-                    httpSecurityLogoutConfigurer.logoutUrl("/logout");
-                    httpSecurityLogoutConfigurer.logoutSuccessUrl("/login");
+                .logout(logout -> {
+                    logout.logoutUrl("/logout");
+                    logout.logoutSuccessUrl("/login");
                 });
 
-
-        super.configure(http);
-
-        // JWT filter for React app, TV token filter for TV app.
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(tvTokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -95,5 +86,6 @@ public class SecurityConfig extends VaadinWebSecurity {
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
         );
 
+        return http.build();
     }
 }

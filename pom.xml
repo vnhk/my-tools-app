@@ -12,9 +12,9 @@
     </parent>
 
     <groupId>com.bervan</groupId>
-    <artifactId>my-tools-vaadin-app</artifactId>
+    <artifactId>my-tools-app</artifactId>
     <version>latest</version>
-    <name>my-tools-vaadin-app</name>
+    <name>my-tools-app</name>
     <packaging>jar</packaging>
 
     <properties>
