@@ -3,6 +3,7 @@ package com.bervan.toolsapp.views.logsapp;
 import com.bervan.common.MenuNavigationComponent;
 import com.vaadin.flow.component.icon.VaadinIcon;
 
+@Deprecated
 public final class LogsAppPageLayout extends MenuNavigationComponent {
 
     public LogsAppPageLayout(String currentRouteName) {

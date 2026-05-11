@@ -15,6 +15,7 @@ import java.util.UUID;
 @Route(value = AbstractLowCodeGeneratorView.ROUTE_NAME, layout = MainLayout.class)
 @RolesAllowed("USER")
 //@Profile(value = {"local", "!production"})
+@Deprecated
 public class LowCodeGeneratorView extends AbstractLowCodeGeneratorView {
 
     public LowCodeGeneratorView(BaseService<UUID, LowCodeClass> service, BervanViewConfig bervanViewConfig, LowCodeClassDetailsService lowCodeClassDetailsService) {

@@ -24,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.util.Timer;
 import java.util.TimerTask;
 
+@Deprecated
 public class QRLoginView extends AbstractPageView {
     private final JsonLogger log = JsonLogger.getLogger(getClass(), "my-tools-app");
 

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 @Route(value = AbstractFileStorageView.ROUTE_NAME, layout = MainLayout.class)
 @RolesAllowed("USER")
+@Deprecated
 public class FileStorageView extends AbstractFileStorageView {
 
     public FileStorageView(@Autowired FileServiceManager service,

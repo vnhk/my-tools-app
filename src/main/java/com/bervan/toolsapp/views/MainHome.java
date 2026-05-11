@@ -25,6 +25,7 @@ import java.util.List;
 
 @Route(value = "home", layout = MainLayout.class)
 @RolesAllowed({"USER", "STREAMING"})
+@Deprecated
 public class MainHome extends AbstractHomePageView {
     public MainHome() {
         if (AuthService.getUserRole().equals("ROLE_USER")) {

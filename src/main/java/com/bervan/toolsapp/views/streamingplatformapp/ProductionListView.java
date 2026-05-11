@@ -12,6 +12,7 @@ import java.util.Map;
 
 @Route(value = AbstractProductionListView.ROUTE_NAME, layout = MainLayout.class)
 @RolesAllowed({"USER", "STREAMING"})
+@Deprecated
 public class ProductionListView extends AbstractProductionListView {
 
     public ProductionListView(Map<String, ProductionData> streamingProductionData, VideoManager videoManager, StreamingConfigLoader streamingConfigLoader) {

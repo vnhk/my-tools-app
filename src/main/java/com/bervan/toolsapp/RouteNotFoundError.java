@@ -10,6 +10,7 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 import jakarta.servlet.http.HttpServletResponse;
 
 @AnonymousAllowed
+@Deprecated
 public class RouteNotFoundError extends VerticalLayout
         implements HasErrorParameter<NotFoundException> {
 

@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 @Route("accept-login")
 @PageTitle("Accept Login")
 @PermitAll
+@Deprecated
 public class AcceptQRLoginPage extends AbstractPageView implements HasUrlParameter<String> {
 
     private final QRLoginService qrLoginService;

@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
+@Deprecated
 public class QRLoginService {
 
     private final Map<Integer, QRLoginData> qrLoginSessions = new ConcurrentHashMap<>();

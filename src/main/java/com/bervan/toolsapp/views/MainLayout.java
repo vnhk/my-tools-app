@@ -48,6 +48,7 @@ import java.util.stream.Collectors;
  * The main view is a top-level placeholder for other views.
  */
 @JsModule("./theme-changer.js")
+@Deprecated
 public class MainLayout extends AppLayout {
 
     private static Div sideMenu;

@@ -28,6 +28,7 @@ import static com.bervan.toolsapp.security.OTPService.CODE_LENGTH;
 @Route("login")
 @PageTitle("Login")
 @PermitAll
+@Deprecated
 public class LoginView extends AbstractPageView {
     private final JsonLogger log = JsonLogger.getLogger(getClass(), "my-tools-app");
 

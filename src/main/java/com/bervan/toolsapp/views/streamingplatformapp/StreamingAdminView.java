@@ -11,6 +11,7 @@ import java.util.Map;
 
 @Route(value = AbstractStreamingAdminView.ROUTE_NAME, layout = MainLayout.class)
 @RolesAllowed({"USER"})
+@Deprecated
 public class StreamingAdminView extends AbstractStreamingAdminView {
 
     public StreamingAdminView(StreamingAdminService adminService,

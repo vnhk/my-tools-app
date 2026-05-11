@@ -30,6 +30,7 @@ import java.util.Optional;
 
 @Route(value = AbstractProductionPlayerView.ROUTE_NAME, layout = MainLayout.class)
 @RolesAllowed({"USER", "STREAMING"})
+@Deprecated
 public class ProductionPlayerView extends AbstractProductionPlayerView {
 
     private final JsonLogger log = JsonLogger.getLogger(getClass(), "my-tools-app");

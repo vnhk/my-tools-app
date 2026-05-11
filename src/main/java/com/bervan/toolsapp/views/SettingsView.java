@@ -23,6 +23,7 @@ import static com.bervan.toolsapp.views.SettingsView.ROUTE_NAME;
 @Route(value = ROUTE_NAME, layout = MainLayout.class)
 @RouteAlias(value = "", layout = MainLayout.class)
 @RolesAllowed({"USER", "STREAMING"})
+@Deprecated
 public class SettingsView extends AbstractPageView {
     public final static String ROUTE_NAME = "settings";
     private final UserRepository userRepository;

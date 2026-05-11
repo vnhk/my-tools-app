@@ -11,6 +11,7 @@ import java.util.Map;
 
 @Route(value = AbstractRemoteControlView.ROUTE_NAME, layout = MainLayout.class)
 @RolesAllowed({"USER", "STREAMING"})
+@Deprecated
 public class RemoteControlView extends AbstractRemoteControlView {
 
     public RemoteControlView(Map<String, ProductionData> streamingProductionData, TvPairingAdapter tvPairingAdapter) {
