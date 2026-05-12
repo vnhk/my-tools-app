@@ -42,7 +42,8 @@ public class ReactRunAllE2ETest extends BaseTest {
         pb.directory(reactDir);
         pb.environment().put("BACKEND_URL", baseUrl);
         pb.environment().put("CI", "true");
-        pb.inheritIO();
+        pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+        pb.redirectError(ProcessBuilder.Redirect.INHERIT);
 
         Process process = pb.start();
         int exitCode = process.waitFor();
