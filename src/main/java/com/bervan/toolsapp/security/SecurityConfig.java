@@ -50,23 +50,15 @@ public class SecurityConfig {
         }
 
         http.authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/login", "/pocket/**",
-                            "/language-learning/**", "/products/**", "/api/tv/pair/**", "/ws/remote-control")
-                            .permitAll();
-                    auth.requestMatchers("/line-awesome/**", "/static/**", "/images/**", "/player.html").permitAll();
-                    auth.requestMatchers("/api/auth/**").permitAll();
-                    auth.requestMatchers("/api/config").permitAll().anyRequest().authenticated();
+                    auth.requestMatchers("/pocket/**",
+                                    "/language-learning/**", "/products/**", "/api/tv/pair/**", "/ws/remote-control",
+                                    "/api/auth/**", "/api/config").permitAll()
+                            .anyRequest().authenticated();
                 })
-                .formLogin(form -> {
-                    form.loginPage("/login").permitAll();
-                    form.defaultSuccessUrl("/generate-otp");
-                    form.successForwardUrl("/generate-otp");
-                })
-                .authenticationProvider(otpAuthenticationProvider)
-                .logout(logout -> {
-                    logout.logoutUrl("/logout");
-                    logout.logoutSuccessUrl("/login");
-                });
+                .authenticationProvider(otpAuthenticationProvider);
+
+        // API uses JWT / TV headers — do not let an old HTTP session SecurityContext skip JwtAuthenticationFilter.
+        http.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(tvTokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -80,10 +72,6 @@ public class SecurityConfig {
                 })
                 .and()
                 .csrf().disable();
-
-        http.sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-        );
 
         return http.build();
     }
