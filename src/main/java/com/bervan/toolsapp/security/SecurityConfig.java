@@ -55,8 +55,7 @@ public class SecurityConfig {
                             .permitAll();
                     auth.requestMatchers("/line-awesome/**", "/static/**", "/images/**", "/player.html").permitAll();
                     auth.requestMatchers("/api/auth/**").permitAll();
-                    auth.requestMatchers("/api/config").permitAll();
-                    auth.requestMatchers("/api/**", "/storage/**", "/file-storage-app/**").authenticated();
+                    auth.requestMatchers("/api/config").permitAll().anyRequest().authenticated();
                 })
                 .formLogin(form -> {
                     form.loginPage("/login").permitAll();
