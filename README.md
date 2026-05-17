@@ -1,6 +1,6 @@
 # my-tools-app
 
-Main deployable Spring Boot application that aggregates all `my-tools` modules into a single runnable service. Pure backend — no UI framework. Frontend is the React app in `my-tools-react/` (or `streaming-platform-react/`).
+Main deployable Spring Boot application that aggregates all `my-tools` modules into a single runnable service. Pure backend — no UI framework. Frontend is the React app in `my-tools-react/`.
 
 ## Responsibilities
 

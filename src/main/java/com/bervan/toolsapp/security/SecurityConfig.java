@@ -51,8 +51,11 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/pocket/**",
-                                    "/language-learning/**", "/products/**", "/api/tv/pair/**", "/ws/remote-control",
-                                    "/api/auth/**", "/api/config").permitAll()
+                                    "/language-learning/**", "/products/**",
+                                    "/api/tv/pair/**", "/ws/remote-control",
+                                    "/api/auth/**", "/api/config",
+                                    "/api/streaming/productions/*/poster",
+                                    "/api/streaming/productions/*/poster/**").permitAll()
                             .anyRequest().authenticated();
                 })
                 .authenticationProvider(otpAuthenticationProvider);
