@@ -38,10 +38,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
-        final boolean hasBearer = authHeader != null && authHeader.startsWith("Bearer ");
+        String token = null;
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            token = authHeader.substring(7);
+        } else {
+            token = request.getParameter("token");
+        }
+        final boolean hasToken = token != null && !token.isBlank();
 
-        // Without Bearer, keep existing SecurityContext (e.g. TV X-Auth-Token filter already set a user).
-        if (!hasBearer) {
+        if (!hasToken) {
             Authentication existing = SecurityContextHolder.getContext().getAuthentication();
             if (existing != null && existing.isAuthenticated()) {
                 filterChain.doFilter(request, response);
@@ -51,8 +56,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        // Bearer present: always resolve from JWT so a leftover HTTP session cannot shadow API auth.
-        String token = authHeader.substring(7);
         try {
             Claims claims = jwtService.validateAndParse(token);
             UUID userId = jwtService.extractUserId(claims);
