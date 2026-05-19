@@ -37,21 +37,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+        String requestUri = request.getRequestURI();
         String authHeader = request.getHeader("Authorization");
         String token = null;
+        String tokenSource;
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
+            tokenSource = "header";
         } else {
             token = request.getParameter("token");
+            if (token != null && !token.isBlank()) {
+                tokenSource = "query";
+            } else {
+                tokenSource = "none";
+            }
         }
         final boolean hasToken = token != null && !token.isBlank();
 
         if (!hasToken) {
             Authentication existing = SecurityContextHolder.getContext().getAuthentication();
             if (existing != null && existing.isAuthenticated()) {
+                log.debug("{} — auth=existing session", requestUri);
                 filterChain.doFilter(request, response);
                 return;
             }
+            log.debug("{} — token=none → unauthenticated", requestUri);
             filterChain.doFilter(request, response);
             return;
         }
@@ -76,13 +86,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         UsernamePasswordAuthenticationToken auth =
                                 new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                         SecurityContextHolder.getContext().setAuthentication(auth);
+                        log.debug("{} — token={} → user={}", requestUri, tokenSource, user.getUsername());
                     },
                     () -> log.warn(
                             "Valid JWT but no User for subject {} (username claim: {}).",
                             claims.getSubject(),
                             claims.get("username", String.class)));
         } catch (JwtException e) {
-            log.debug("JWT rejected: {}", e.getMessage());
+            log.debug("{} — JWT rejected: {}", requestUri, e.getMessage());
         }
 
         filterChain.doFilter(request, response);
