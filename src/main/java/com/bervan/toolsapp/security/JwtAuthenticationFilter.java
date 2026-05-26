@@ -86,7 +86,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         UsernamePasswordAuthenticationToken auth =
                                 new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                         SecurityContextHolder.getContext().setAuthentication(auth);
-                        log.debug("{} — token={} → user={}", requestUri, tokenSource, user.getUsername());
+//                        log.debug("{} — token={} → user={}", requestUri, tokenSource, user.getUsername());
                     },
                     () -> log.warn(
                             "Valid JWT but no User for subject {} (username claim: {}).",
