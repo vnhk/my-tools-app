@@ -53,6 +53,7 @@ public class SecurityConfig {
                     auth.requestMatchers("/pocket/**",
                                     "/language-learning/**", "/products/**",
                                     "/api/tv/pair/**", "/ws/remote-control",
+                                    "/api/public/**",
                                     "/api/auth/**", "/api/config",
                                     "/api/streaming/productions/*/poster",
                                     "/api/streaming/productions/*/poster/**").permitAll()
