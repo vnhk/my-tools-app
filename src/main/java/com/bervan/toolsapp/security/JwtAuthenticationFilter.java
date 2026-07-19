@@ -94,6 +94,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             claims.get("username", String.class)));
         } catch (JwtException e) {
             log.debug("{} — JWT rejected: {}", requestUri, e.getMessage());
+            if (e.getMessage().contains("expired")) {
+                response.setHeader("X-Token-Expired", "true");
+            }
         }
 
         filterChain.doFilter(request, response);
