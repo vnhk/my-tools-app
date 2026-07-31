@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -81,32 +82,40 @@ public class AuthController {
         final int uuid;
         final int number;
         final String pollToken;
+        // Set when the QR was shown by a TV — lets the confirming phone
+        // auto-pair its remote control to the same room.
+        final String roomId;
         final long created;
         volatile boolean done;
         volatile User user;
 
-        QrEntry(int uuid, int number, String pollToken) {
+        QrEntry(int uuid, int number, String pollToken, String roomId) {
             this.uuid = uuid;
             this.number = number;
             this.pollToken = pollToken;
+            this.roomId = roomId;
             this.created = System.currentTimeMillis();
         }
 
         boolean expired() { return System.currentTimeMillis() - created > 300_000; }
     }
 
+    record QrGenerateRequest(String roomId) {}
+
     private final ConcurrentHashMap<Integer, QrEntry> qrByUuid = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, QrEntry> qrByPoll = new ConcurrentHashMap<>();
 
     @PostMapping("/qr/generate")
-    public ResponseEntity<?> qrGenerate(HttpServletRequest request) {
+    public ResponseEntity<?> qrGenerate(HttpServletRequest request,
+                                        @RequestBody(required = false) QrGenerateRequest body) {
         int uuid = ThreadLocalRandom.current().nextInt(1000, 9999);
         int attempts = 0;
         while (qrByUuid.containsKey(uuid) && ++attempts < 100)
             uuid = ThreadLocalRandom.current().nextInt(1000, 9999);
         int number = ThreadLocalRandom.current().nextInt(1, 100);
         String pollToken = UUID.randomUUID().toString();
-        QrEntry entry = new QrEntry(uuid, number, pollToken);
+        String roomId = body != null && body.roomId() != null && !body.roomId().isBlank() ? body.roomId() : null;
+        QrEntry entry = new QrEntry(uuid, number, pollToken, roomId);
         qrByUuid.put(uuid, entry);
         qrByPoll.put(pollToken, entry);
         qrByUuid.entrySet().removeIf(e -> e.getValue().expired());
@@ -154,7 +163,10 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Wrong number"));
         entry.done = true;
         entry.user = user;
-        return ResponseEntity.ok(Map.of("message", "Confirmed"));
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Confirmed");
+        if (entry.roomId != null) response.put("roomId", entry.roomId);
+        return ResponseEntity.ok(response);
     }
 
     // ---- OTP generation ----
