@@ -50,7 +50,8 @@ public class SecurityConfig {
         }
 
         http.authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/pocket/**",
+                    auth.requestMatchers("/error",
+                                    "/pocket/**",
                                     "/language-learning/**", "/products/**",
                                     "/api/tv/pair/**", "/ws/remote-control",
                                     "/api/files/stream-download", "/api/files/stream-download/**",
