@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
 
+import com.bervan.englishtextstats.service.ExtractedEbookTextService;
+
 @Primary
 @Service
 public class IntegratedTextNotKnownWordsService extends TextNotKnownWordsService {
@@ -20,11 +22,11 @@ public class IntegratedTextNotKnownWordsService extends TextNotKnownWordsService
 
     public IntegratedTextNotKnownWordsService(TranslationRecordService translationRecordService,
                                               ExtractedEbookTextRepository extractedEbookTextRepository,
+                                              ExtractedEbookTextService extractedEbookTextService,
                                               KnownWordRepository knownWordRepository,
                                               SearchService searchService,
-                                              
                                               @Value("${file.service.storage.folder.main}") String pathToFileStorage) {
-        super(extractedEbookTextRepository, knownWordRepository, searchService,  pathToFileStorage);
+        super(extractedEbookTextRepository, extractedEbookTextService, knownWordRepository, searchService, pathToFileStorage);
         this.translationRecordService = translationRecordService;
     }
 
@@ -32,7 +34,9 @@ public class IntegratedTextNotKnownWordsService extends TextNotKnownWordsService
     public void loadIntoMemory() {
         super.loadIntoMemory();
         updateInMemoryWords(translationRecordService.load(Pageable.ofSize(1000000))
-                .stream().map(e -> {
+                .stream()
+                .filter(e -> e != null && e.getSourceText() != null && !e.getSourceText().isBlank())
+                .map(e -> {
                     KnownWord k = new KnownWord();
                     k.setValue(e.getSourceText());
                     return k;
