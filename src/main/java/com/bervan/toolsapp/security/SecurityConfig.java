@@ -53,11 +53,13 @@ public class SecurityConfig {
                     auth.requestMatchers("/error",
                                     "/pocket/**",
                                     "/language-learning/**", "/products/**",
-                                    "/api/tv/pair/**", "/ws/remote-control",
+                                    "/api/tv/pair/start", "/api/tv/pair/token/*", "/ws/remote-control",
                                     "/api/files/stream-download", "/api/files/stream-download/**",
                                     "/api/auth/**", "/api/config",
                                     "/api/streaming/productions/*/poster",
-                                    "/api/streaming/productions/*/poster/**").permitAll()
+                                    "/api/streaming/productions/*/poster/**",
+                                    "/api/audio/albums/*/cover",
+                                    "/api/audio/albums/*/cover/**").permitAll()
                             .anyRequest().authenticated();
                 })
                 .authenticationProvider(otpAuthenticationProvider);
