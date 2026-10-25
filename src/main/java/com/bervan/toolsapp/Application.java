@@ -3,8 +3,7 @@ package com.bervan.toolsapp;
 import com.bervan.common.BervanBaseRepositoryImpl;
 import com.bervan.common.user.User;
 import com.bervan.common.user.UserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.bervan.logging.JsonLogger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -31,7 +30,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 @EnableAsync
 public class Application extends SpringBootServletInitializer {
     private final UserRepository userRepository;
-    private Logger logger = LoggerFactory.getLogger(Application.class);
+    private final JsonLogger logger = JsonLogger.getLogger(Application.class, "my-tools-app");
 
     public Application(UserRepository userRepository) {
         this.userRepository = userRepository;
