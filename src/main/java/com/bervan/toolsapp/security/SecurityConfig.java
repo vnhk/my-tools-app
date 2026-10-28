@@ -1,6 +1,7 @@
 package com.bervan.toolsapp.security;
 
 import com.bervan.streamingapp.tv.TvTokenAuthenticationFilter;
+import jakarta.servlet.DispatcherType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -50,7 +51,8 @@ public class SecurityConfig {
         }
 
         http.authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/error",
+                    auth.dispatcherTypeMatchers(DispatcherType.ASYNC, DispatcherType.ERROR).permitAll()
+                            .requestMatchers("/error",
                                     "/pocket/**",
                                     "/language-learning/**", "/products/**",
                                     "/api/tv/pair/start", "/api/tv/pair/token/*", "/ws/remote-control",
