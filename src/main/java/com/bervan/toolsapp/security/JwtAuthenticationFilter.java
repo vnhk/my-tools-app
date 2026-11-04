@@ -56,11 +56,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (!hasToken) {
             Authentication existing = SecurityContextHolder.getContext().getAuthentication();
             if (existing != null && existing.isAuthenticated()) {
-                log.debug("{} — auth=existing session", requestUri);
                 filterChain.doFilter(request, response);
                 return;
             }
-            log.debug("{} — token=none → unauthenticated", requestUri);
             filterChain.doFilter(request, response);
             return;
         }
@@ -85,7 +83,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         UsernamePasswordAuthenticationToken auth =
                                 new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                         SecurityContextHolder.getContext().setAuthentication(auth);
-//                        log.debug("{} — token={} → user={}", requestUri, tokenSource, user.getUsername());
                     },
                     () -> log.warn(
                             "Valid JWT but no User for subject {} (username claim: {}).",
